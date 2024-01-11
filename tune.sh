@@ -35,7 +35,6 @@ start_fine_tuning_job() {
 }
 
 # Main script execution
-setup_environment
-file_response=$(upload_file)
-file_id=$(check_upload_status "$file_response")
-start_fine_tuning_job "$file_id"
+# file_response=$(upload_file)
+# file_id=$(check_upload_status "$file_response")
+# start_fine_tuning_job "$file_id"
