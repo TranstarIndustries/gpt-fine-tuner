@@ -2,11 +2,13 @@
 
 set -e
 
+
 # Function to upload a file
 upload_file() {
+    local file_path=$1
     local response=$(curl --location --request POST 'https://api.openai.com/v1/files' \
                         --header "Authorization: Bearer $OPENAI_TOKEN" \
-                        --form 'file=@"converted_chat_format_data.jsonl"' \
+                        --form 'file=@"'"$file_path"'"' \
                         --form 'purpose="fine-tune"')
     echo $response
 }
@@ -34,7 +36,28 @@ start_fine_tuning_job() {
          }"
 }
 
+check_response() {
+    local response=$1
+    if [[ $(jq -r '.error' <<< "$response") != "null" ]]; then
+        echo "Error occured:"
+        jq -r '.error' <<< "$response"
+        exit 1
+    fi
+}
+
 # Main script execution
-# file_response=$(upload_file)
-# file_id=$(check_upload_status "$file_response")
-# start_fine_tuning_job "$file_id"
+file_path=$1
+
+if [[ -z "$file_path" ]]; then
+    echo "Please provide a file path"
+    echo usage: ./tune.sh training_data
+    exit 1
+fi
+
+file_response=$(upload_file "$file_path")
+check_response "$file_response"
+file_id=$(check_upload_status "$file_response")
+echo Successfully uploaded training data: $file_id
+job_response=$(start_fine_tuning_job "$file_id")
+check_response "$job_response"
+echo Successfully started fine-tuning job: $job_response
