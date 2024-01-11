@@ -2,11 +2,6 @@
 
 set -e
 
-# Function to set up environment variables
-setup_environment() {
-    export OPENAI_TOKEN="<INSERT-OPENAI-TOKEN>"
-}
-
 # Function to upload a file
 upload_file() {
     local response=$(curl --location --request POST 'https://api.openai.com/v1/files' \
